@@ -38,22 +38,20 @@ shared class Head(title = null) satisfies Tag {
     }
 }
 
-shared abstract class Container<TagType>(String name, TagType|String... initialTags) satisfies Tag 
+shared abstract class Container<TagType>(String name, tags) satisfies Tag 
     given TagType satisfies Tag {
     
-    shared Iterable<TagType|String> tags = initialTags;
+    shared {TagType|String*} tags;
 
-    shared actual void visit(Visitor visitor) {
-        visitAroundTags(visitor, name, tags);
-    }
+    visit(Visitor visitor) => visitAroundTags(visitor, name, tags);
 }
 
-shared class Body(Tag|String... initialTags) extends Container<Tag>("body", initialTags...) {}
+shared class Body({Tag|String*} tags) extends Container<Tag>("body", tags) {}
 
-shared abstract class Block(String name, Tag|String... initialTags) extends Container<Tag>(name, initialTags...) satisfies Tag {}
+shared abstract class Block(String name, {Tag|String*} tags) extends Container<Tag>(name, tags) satisfies Tag {}
 
-shared class P(Tag|String... tags) extends Block("p", tags...){}
+shared class P({Tag|String*} tags) extends Block("p", tags){}
 
-shared abstract class Inline(String name, InlineTag|String... initialTags) extends Container<InlineTag>(name, initialTags...) satisfies InlineTag {}
+shared abstract class Inline(String name, {InlineTag|String*} tags) extends Container<InlineTag>(name, tags) satisfies InlineTag {}
 
-shared class B(InlineTag|String... tags) extends Inline("b", tags...){}
+shared class B({InlineTag|String*} tags) extends Inline("b", tags){}

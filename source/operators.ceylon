@@ -13,94 +13,74 @@ interface Visitable satisfies Iterable<Visitable|Integer>{
     
     shared void visitPrefix(void f(Visitable|Integer v)){
         f(this);
-        visitChildren(function(Visitable child) child.visitPrefix(f), f);
+        visitChildren(function(Visitable child) => child.visitPrefix(f), f);
     }
 
     shared void visitPostfix(void f(Visitable|Integer v)){
-        visitChildren(function(Visitable child) child.visitPostfix(f), f);
+        visitChildren(function(Visitable child) => child.visitPostfix(f), f);
         f(this);
     }
 }
 
 abstract class Tree() satisfies Numeric<Tree> & Visitable { 
-    shared actual Tree plus(Tree other) {
-        return Addition(this, other);
-    }
-    shared actual Tree divided(Tree other) {
-        return Division(this, other);
-    }
-    shared actual Tree minus(Tree other) {
-        return Subtraction(this, other);
-    }
-    shared actual Tree negativeValue {
-        return Negative(this);
-    }
-    shared actual Tree positiveValue {
-        return Positive(this);
-    }
-    shared actual Tree times(Tree other) {
-        return Multiplication(this, other);
-    }
+    plus(Tree other) => Addition(this, other);
+    divided(Tree other) => Division(this, other);
+    minus(Tree other) => Subtraction(this, other);
+    negativeValue => Negative(this);
+    positiveValue => Positive(this);
+    times(Tree other) => Multiplication(this, other);
     shared formal Integer evaluate();
 }
 
 class Binary(Tree|Integer left, Tree|Integer right, Integer f(Integer a, Integer b), description) extends Tree(){
     shared actual String description;
     
-    shared actual Integer evaluate() {
-        return f(resolve(left), resolve(right));
-    }
-    shared actual default String string = "(" left " " description " " right ")";
+    evaluate() => f(resolve(left), resolve(right));
+
+    string => "(``left`` ``description`` ``right``)";
     
-    shared actual Iterator<Visitable|Integer> iterator {
-        return {left, right}.iterator;
-    }
+    iterator() => {left, right}.iterator();
 }
 
-class Multiplication(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) a * b, "*"){
+class Multiplication(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) => a * b, "*"){
 }
 
-class Addition(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) a + b, "+"){
+class Addition(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) => a + b, "+"){
 }
 
-class Subtraction(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) a - b, "-"){
+class Subtraction(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) => a - b, "-"){
 }
 
-class Division(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) a / b, "/"){
+class Division(Tree|Integer left, Tree|Integer right) extends Binary(left, right, function(Integer a, Integer b) => a / b, "/"){
 }
 
 Integer resolve(Tree|Integer left) {
     switch(left)
-            case (is Tree){ return left.evaluate(); }
+    case (is Tree){ return left.evaluate(); }
     case (is Integer){ return left; }
 }
 
 class Unary(Tree|Integer node, Integer f(Integer n), description) extends Tree(){
     shared actual String description;
     
-    shared actual Integer evaluate() {
-        return f(resolve(node));
-    }
-    shared actual String string = "(" description " " node ")";
+    evaluate() => f(resolve(node));
 
-    shared actual Iterator<Visitable|Integer> iterator {
-        return {node}.iterator;
-    }
+    string => "(``description`` ``node``)";
+
+    iterator() => {node}.iterator();
 }
 
-class Negative(Tree|Integer node) extends Unary(node, function(Integer n) - n, "1-"){
+class Negative(Tree|Integer node) extends Unary(node, function(Integer n) => - n, "1-"){
 }
 
-class Positive(Tree|Integer node) extends Unary(node, function(Integer n) + n, "1+"){
+class Positive(Tree|Integer node) extends Unary(node, function(Integer n) => + n, "1+"){
 }
 
 class Constant(Integer c) extends Tree(){
-    shared actual Integer evaluate() {
-        return c;
-    }
-    shared actual String string = c.string;
-    shared actual Iterator<Visitable|Integer> iterator = {}.iterator;
-    shared actual String description = string;
+    evaluate() => c;
+    string => c.string;
+    iterator() => {}.iterator();
+    description => string;
 }
 
 void testTree(){

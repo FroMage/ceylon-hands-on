@@ -1,8 +1,8 @@
-import ceylon.net.uri { parseURI }
+import ceylon.net.uri { parseURI = parse }
 import ceylon.json { 
     parseJson = parse,
     JsonObject = Object,
-    JsonArray = Array, nil
+    JsonArray = Array
 }
 
 doc "Run the module `demoStef`."
@@ -18,7 +18,7 @@ void run() {
             if(is JsonObject mod){
                 print(mod["module"]);
                 for(entry in mod){
-                    print(" [" entry.key "] = " entry.item "");
+                    print(" [``entry.key``] = ``entry.item``");
                 }
             }
         }

@@ -15,7 +15,7 @@ shared interface Visitable{
         visitor.text(text);
         visitor.closeTag(name);
     }
-    shared default void visitAroundTags(Visitor visitor, String name, Iterable<Tag|String> tags){
+    shared default void visitAroundTags(Visitor visitor, String name, {Tag|String*} tags){
         visitor.openTag(name);
         for(tag in tags){
             if(is Tag tag){
@@ -30,10 +30,10 @@ shared interface Visitable{
 
 class PrintVisitor() satisfies Visitor {
     StringBuilder builder = StringBuilder();
-    variable Integer level := 0;
+    variable Integer level = 0;
     void indent() {
         builder.append("\n");
-        for(i in 0..level){
+        for(i in 0:level){
             builder.append(" ");
         }
     }
